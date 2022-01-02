@@ -5,7 +5,7 @@ from utils.vocab import PAD, UNK
 import torch
 
 class Word2vecUtils():
-
+    '读取词向量。'
     def __init__(self, word2vec_file):
         super(Word2vecUtils, self).__init__()
         self.word2vec = {}
@@ -14,8 +14,12 @@ class Word2vecUtils():
     def load_embeddings(self, module, vocab, device='cpu'):
         """ Initialize the embedding with glove and char embedding
         """
+        # 确认词向量维度
         emb_size = module.weight.data.size(-1)
         outliers = 0
+        # 遍历从训练集中获得的字，并获取它们的词向量表示
+        # vocab[word]返回的是词的嵌入表示，data[词的idx] = 词的vector
+        # 词向量表中的未登录词将记作UNK
         for word in vocab.word2id:
             if word == PAD: # PAD symbol is always 0-vector
                 module.weight.data[vocab[PAD]] = torch.zeros(emb_size, dtype=torch.float, device=device)
@@ -25,6 +29,7 @@ class Word2vecUtils():
         return 1 - outliers / float(len(vocab))
 
     def read_from_file(self, word2vec_file):
+        '从word2vec词向量文件中读取词向量并保存在class中。词向量文件的维度为768。'
         with open(word2vec_file, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip('\n')
