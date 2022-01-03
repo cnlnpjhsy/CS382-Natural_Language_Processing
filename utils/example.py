@@ -46,11 +46,11 @@ class Example():
         for slot in self.slot:      # 对槽字典内的每个标注：
             value = self.slot[slot]
             bidx = self.utt.find(value)     # 在噪声文本中寻找无噪声槽值的匹配
-            if bidx != -1:      # 若找到，对噪声文本进行BI标注
+            if bidx != -1:      # 若找到，对噪声文本中的槽值进行BI标注
                 # 对每个字的标注形式为：O 或者 B-动作-语义槽 或者 I-动作-语义槽
                 self.tags[bidx: bidx + len(value)] = [f'I-{slot}'] * len(value)
                 self.tags[bidx] = f'B-{slot}'
-        # 这个utt的槽列表，['动作-语义槽-槽值']（貌似没有用到）
+        # 这个utt的槽列表，['动作-语义槽-槽值']。例如：'inform-操作-导航'
         self.slotvalue = [f'{slot}-{value}' for slot, value in self.slot.items()]
         # 将噪声文本转换为字嵌入形式的列表
         self.input_idx = [Example.word_vocab[c] for c in self.utt]

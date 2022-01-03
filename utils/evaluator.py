@@ -1,7 +1,7 @@
 #coding=utf8
 
 class Evaluator():
-
+    # 评价时，直接使用'动作-语义槽-槽值'的标注形式将预测值与实际值进行匹配比较
     def acc(self, predictions, labels):
         metric_dicts = {}
         metric_dicts['acc'] = self.accuracy(predictions, labels)
