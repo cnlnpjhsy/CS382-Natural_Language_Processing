@@ -1,4 +1,5 @@
 #coding=utf8
+from numpy.core.numeric import outer
 import torch
 import torch.nn as nn
 import torch.nn.utils.rnn as rnn_utils
@@ -11,6 +12,7 @@ class SLUTagging(nn.Module):
         self.config = config
         # 设置RNN的编码cell是何种方式。默认为LSTM
         self.cell = config.encoder_cell
+        self.output = config.output
         self.word_embed = nn.Embedding(config.vocab_size, config.embed_size, padding_idx=0)
         self.rnn = getattr(nn, self.cell)(config.embed_size, config.hidden_size // 2, num_layers=config.num_layer, bidirectional=True, batch_first=True)
         self.dropout_layer = nn.Dropout(p=config.dropout)
@@ -40,7 +42,10 @@ class SLUTagging(nn.Module):
     def decode(self, label_vocab, batch):   # 在开发集上使用decode函数
         batch_size = len(batch)
         labels = batch.labels   # 整个batch的实际标注，'动作-语义槽-槽值'的可读形式
-        prob, loss = self.forward(batch)    # 获取模型输出的概率与loss
+        if not self.output:
+            prob, loss = self.forward(batch)    # 获取模型输出的概率与loss
+        else:
+            prob = self.forward(batch)
         predictions = []    # 整个batch的预测结果，'动作-语义槽-槽值'的可读形式
         for i in range(batch_size):     # 对batch里的第i个Example：
             # 取softmax概率最大值作为预测结果
@@ -72,7 +77,9 @@ class SLUTagging(nn.Module):
                 pred_tuple.append(f'{slot}-{value}')    # 添加预测结果'动作-语义槽-槽值'
             predictions.append(pred_tuple)  # 将这个Example的预测结果添加到batch的预测结果中
             # 到此为止完成了batch里其中一个Example的解码过程。继续循环batch内所有的Example
-        return predictions, labels, loss.cpu().item()   # 返回预测结果、实际标注与loss
+        if not self.output:
+            return predictions, labels, loss.cpu().item()   # 返回预测结果、实际标注与loss
+        return predictions
 
 
 class TaggingFNNDecoder(nn.Module):
@@ -85,8 +92,9 @@ class TaggingFNNDecoder(nn.Module):
 
     def forward(self, hiddens, mask, labels=None):
         logits = self.output_layer(hiddens)     # 接全连接层，得到预测输出logits
-        # 被mask时，对应logits为负无穷
-        logits += (1 - mask).unsqueeze(-1).repeat(1, 1, self.num_tags) * -1e32
+        if mask:
+            # 被mask时，对应logits为负无穷
+            logits += (1 - mask).unsqueeze(-1).repeat(1, 1, self.num_tags) * -1e32
         prob = torch.softmax(logits, dim=-1)    # 分类问题，需softmax归一化
         if labels is not None:      # 有实际标注时（训练时），用交叉熵函数计算loss
             loss = self.loss_fct(logits.view(-1, logits.shape[-1]), labels.view(-1))

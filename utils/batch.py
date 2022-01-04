@@ -1,11 +1,18 @@
 #-*- coding:utf-8 -*-
 import torch
 
+from utils.example import Example
+
 
 def from_example_list(args, ex_list, device='cpu', train=True):
     '获取Example的列表。每一个utt（有噪声文本）都是一个Example。按照Example噪声文本长度的降序排列。'
     ex_list = sorted(ex_list, key=lambda x: len(x.input_idx), reverse=True)
     batch = Batch(ex_list, device)
+    if not train:
+        list_idx = []
+        for ex in ex_list:
+            list_idx.append(ex.original_idx)
+        batch.get_original_idx(list_idx)
     pad_idx = args.pad_idx
     tag_pad_idx = args.tag_pad_idx
 
@@ -44,7 +51,11 @@ class Batch():
         super(Batch, self).__init__()
 
         self.examples = examples
+        self.original_idx = []
         self.device = device
+
+    def get_original_idx(self, list_idx):
+        self.original_idx = list_idx
 
     def __len__(self):
         return len(self.examples)

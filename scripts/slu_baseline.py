@@ -1,4 +1,5 @@
 #coding=utf8
+import json
 import sys, os, time, gc
 from torch.optim import Adam
 
@@ -23,11 +24,18 @@ print("Use GPU with index %s" % (args.device) if args.device >= 0 else "Use CPU 
 start_time = time.time()
 train_path = os.path.join(args.dataroot, 'train.json')
 dev_path = os.path.join(args.dataroot, 'development.json')
+test_path = os.path.join(args.dataroot, 'test_unlabelled.json')
+output_path = os.path.join(args.dataroot, 'test.json')
 Example.configuration(args.dataroot, train_path=train_path, word2vec_path=args.word2vec_path)
-train_dataset = Example.load_dataset(train_path)
-dev_dataset = Example.load_dataset(dev_path)
-print("Load dataset and database finished, cost %.4fs ..." % (time.time() - start_time))
-print("Dataset size: train -> %d ; dev -> %d" % (len(train_dataset), len(dev_dataset)))
+if not args.output:
+    train_dataset = Example.load_dataset(train_path)
+    dev_dataset = Example.load_dataset(dev_path)
+    print("Load dataset and database finished, cost %.4fs ..." % (time.time() - start_time))
+    print("Dataset size: train -> %d ; dev -> %d" % (len(train_dataset), len(dev_dataset)))
+else:
+    test_dataset = Example.load_testset(test_path)
+    print("Load test dataset finished, cost %.4fs ..." % (time.time() - start_time))
+    print("Dataset size: test -> %d" % len(test_dataset))
 
 args.vocab_size = Example.word_vocab.vocab_size     # 词库大小
 args.pad_idx = Example.word_vocab[PAD]
@@ -60,8 +68,8 @@ def decode(choice):
             current_batch = from_example_list(args, cur_dataset, device, train=True)
             # 获取当前batch的预测结果、实际标注和loss
             pred, label, loss = model.decode(Example.label_vocab, current_batch)
-            predictions.extend(pred)    # 将这个batch的预测结果...
-            labels.extend(label)        # ...和实际标注添加到整个数据集的列表
+            predictions.extend(pred)    # 将这个batch的预测结果添加到整个数据集的列表
+            labels.extend(label)    # 将这个batch的实际标注添加到数据集的列表
             total_loss += loss
             count += 1
         metrics = Example.evaluator.acc(predictions, labels)    # 评价结果，使用acc和fscore
@@ -71,7 +79,33 @@ def decode(choice):
     return metrics, total_loss / count
 
 
-if not args.testing:    # 如果不是开发集/测试集状态：（即当前处于训练状态）
+def output():
+    model.eval()
+    dataset = test_dataset
+    predictions, original_idx = [], []
+    original_pred = dict()
+    with torch.no_grad():
+        for i in range(0, len(dataset), args.batch_size):
+            cur_dataset = dataset[i: i + args.batch_size]
+            current_batch = from_example_list(args, cur_dataset, device, train=False) 
+            pred = model.decode(Example.label_vocab, current_batch)
+            predictions.extend(pred)
+            original_idx.extend(current_batch.original_idx)
+    count = 0
+    for idx in original_idx:
+        original_pred[idx] = [pred_tuple.split('-') for pred_tuple in predictions[count]]
+        count += 1
+    
+    datas = json.load(open(test_path, 'r', encoding='utf-8'))
+    count = 0
+    for data in datas:
+        for utt in data:
+            utt['pred'] = original_pred[count]
+            count += 1
+    json.dump(datas, open(output_path, 'w', encoding='utf-8'), indent=4, ensure_ascii=False)
+
+
+if not args.testing and not args.output:    # 如果不是开发集/测试集状态：（即当前处于训练状态）
     # 训练次数 = batch总数 * max_epoch
     num_training_steps = ((len(train_dataset) + args.batch_size - 1) // args.batch_size) * args.max_epoch
     print('Total training steps: %d' % (num_training_steps))
@@ -116,8 +150,13 @@ if not args.testing:    # 如果不是开发集/测试集状态：（即当前�
             print('NEW BEST MODEL: \tEpoch: %d\tDev loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, dev_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
 
     print('FINAL BEST RESULT: \tEpoch: %d\tDev loss: %.4f\tDev acc: %.4f\tDev fscore(p/r/f): (%.4f/%.4f/%.4f)' % (best_result['iter'], best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1']['precision'], best_result['dev_f1']['recall'], best_result['dev_f1']['fscore']))
-else:   # 开发集/测试集状态，只进行结果评价
+if args.testing:    # 开发集/测试集状态，只进行结果评价
     start_time = time.time()
     metrics, dev_loss = decode('dev')
     dev_acc, dev_fscore = metrics['acc'], metrics['fscore']
     print("Evaluation costs %.2fs ; Dev loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)" % (time.time() - start_time, dev_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
+if args.output:
+    start_time = time.time()
+    predictions = output()
+    print("Successfully write predictions as outputs, costs %.2fs." % (time.time() - start_time))
+
