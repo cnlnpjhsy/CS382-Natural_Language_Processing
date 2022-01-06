@@ -32,4 +32,14 @@ FINAL BEST RESULT:      Epoch: 3        Dev loss: 0.4687        Dev acc: 73.0727
   ```  
   - 从输出文件中就可以看出baseline的效果很不好。快来改进吧！
   
-  
+### **2022.1.6**
+  - 将模型更换为BERT-CRF，并进行槽位填充与多意图分析的联合训练。  
+    CRF层使用python库：`pytorch-crf`，使用前先pip install。  
+    相关文献：
+    - [BERT for Joint Intent Classification and Slot Filling](https://arxiv.org/pdf/1902.10909.pdf)
+    - [Joint Multiple Intent Detection and Slot Labeling for Goal-Oriented Dialog](https://aclanthology.org/N19-1055.pdf)
+  - 运行该指令进行训练。需要进行充分的训练，请调整max_epoch，并根据自身显卡状况调整batch大小。似乎每1GB显存可以支持12组数据在batch里。  
+    **bert的训练很慢，请尽快进行工作，为调试与最后的fine-tuning争取时间！**
+  ```
+  python scripts/slu_baseline.py --max_epoch 10 --device 0 --batch_size 64
+  ```

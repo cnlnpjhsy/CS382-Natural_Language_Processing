@@ -11,7 +11,9 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "--output"
+                "--max_epoch", "2", 
+                "--device", "0", 
+                "--batch_size", "64"
             ]
         }
     ]
