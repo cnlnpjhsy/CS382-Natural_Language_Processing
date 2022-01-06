@@ -1,0 +1,185 @@
+[
+    [
+        {
+            "utt_id": 1,
+            "manual_transcript": "给我导航云南省昆明市黄土坡",
+            "asr_1best": "导航云南省昆明市黄土坡",
+            "semantic": [
+                [
+                    "inform",
+                    "操作",
+                    "导航"
+                ],
+                [
+                    "inform",
+                    "终点名称",
+                    "云南省昆明市黄土坡"
+                ]
+            ]
+        }
+    ],
+    [
+        {
+            "utt_id": 1,
+            "manual_transcript": "我要回家",
+            "asr_1best": "我要回家",
+            "semantic": [
+                [
+                    "inform",
+                    "终点名称",
+                    "家"
+                ]
+            ]
+        },
+        {
+            "utt_id": 2,
+            "manual_transcript": "森林豪庭",
+            "asr_1best": "生你好听",
+            "semantic": [
+                [
+                    "inform",
+                    "poi名称",
+                    "森林豪庭"
+                ]
+            ]
+        },
+        {
+            "utt_id": 3,
+            "manual_transcript": "邻水县森林豪庭",
+            "asr_1best": "邻水县森林豪庭",
+            "semantic": [
+                [
+                    "inform",
+                    "poi名称",
+                    "邻水县森林豪庭"
+                ]
+            ]
+        }
+    ],
+    [
+        {
+            "utt_id": 1,
+            "manual_transcript": "(side)(dialect)",
+            "asr_1best": "第二个到塔季他这个道士观",
+            "semantic": []
+        },
+        {
+            "utt_id": 2,
+            "manual_transcript": "(side)(dialect)",
+            "asr_1best": "电视的",
+            "semantic": []
+        },
+        {
+            "utt_id": 3,
+            "manual_transcript": "(side)(unknown)介绍几个顾客(unknown)",
+            "asr_1best": "到几个路口",
+            "semantic": []
+        },
+        {
+            "utt_id": 4,
+            "manual_transcript": "(side)",
+            "asr_1best": "西西里科学院花园的",
+            "semantic": []
+        },
+        {
+            "utt_id": 5,
+            "manual_transcript": "退出(unknown)",
+            "asr_1best": "白垢的店",
+            "semantic": []
+        },
+        {
+            "utt_id": 6,
+            "manual_transcript": "退出导航",
+            "asr_1best": "退出导航",
+            "semantic": [
+                [
+                    "inform",
+                    "操作",
+                    "退出"
+                ],
+                [
+                    "inform",
+                    "对象",
+                    "导航"
+                ]
+            ]
+        }
+    ],
+    [
+        {
+            "utt_id": 1,
+            "manual_transcript": "西乡流塘",
+            "asr_1best": "西乡流塘",
+            "semantic": [
+                [
+                    "inform",
+                    "poi名称",
+                    "西乡流塘"
+                ]
+            ]
+        }
+    ],
+    [
+        {
+            "utt_id": 1,
+            "manual_transcript": "去红椿不走高速",
+            "asr_1best": "去红椿不走高速",
+            "semantic": [
+                [
+                    "inform",
+                    "终点名称",
+                    "红椿"
+                ],
+                [
+                    "inform",
+                    "路线偏好",
+                    "不走高速"
+                ]
+            ]
+        }
+    ],
+    [
+        {
+            "utt_id": 1,
+            "manual_transcript": "罗城光明眼科医院",
+            "asr_1best": "罗城光明眼科医院",
+            "semantic": [
+                [
+                    "inform",
+                    "poi名称",
+                    "罗城光明眼科医院"
+                ]
+            ]
+        },
+        {
+            "utt_id": 2,
+            "manual_transcript": "去聊城光明眼科医院",
+            "asr_1best": "去聊城光明眼科医院",
+            "semantic": [
+                [
+                    "inform",
+                    "终点名称",
+                    "聊城光明眼科医院"
+                ]
+            ]
+        },
+        {
+            "utt_id": 3,
+            "manual_transcript": "(unknown)",
+            "asr_1best": "我要",
+            "semantic": []
+        },
+        {
+            "utt_id": 4,
+            "manual_transcript": "去第三个",
+            "asr_1best": "去第三个",
+            "semantic": [
+                [
+                    "inform",
+                    "序列号",
+                    "第三个"
+                ]
+            ]
+        }
+    ]
+]
