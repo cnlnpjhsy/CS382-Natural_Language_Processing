@@ -28,4 +28,6 @@ def add_argument_base(arg_parser):
     arg_parser.add_argument('--embed_size', default=768, type=int, help='Size of word embeddings')
     arg_parser.add_argument('--hidden_size', default=768, type=int, help='hidden size')
     arg_parser.add_argument('--num_layer', default=2, type=int, help='number of layer')
+    arg_parser.add_argument('--slot_loss', default=1.0, help='weight of slot loss')
+    arg_parser.add_argument('--intent_loss', default=1.0, help='weight of intent loss')
     return arg_parser

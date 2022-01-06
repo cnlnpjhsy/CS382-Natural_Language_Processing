@@ -42,8 +42,7 @@ args.CLS_idx = Example.label_vocab.convert_tag_to_idx(CLS)
 args.SEP_idx = Example.label_vocab.convert_tag_to_idx(SEP)
 args.num_tags = Example.label_vocab.num_tags        # 标注库大小
 args.tag_pad_idx = Example.label_vocab.convert_tag_to_idx(PAD)
-args.slot_loss_weight = 1.0
-args.intent_loss_weight = 1.0
+args.num_intents = 2
 
 
 model = SLUTagging(args).to(device)
@@ -62,7 +61,7 @@ def decode(choice):
     predictions, labels = [], []    # 整个数据集的预测结果、实际标注列表。都是'动作-语义槽-槽值'的可读形式
     total_slot_loss, total_intent_loss, total_joint_loss, count = 0, 0, 0, 0
     with torch.no_grad():   # decode阶段不需要计算梯度
-        for i in tqdm(range(0, len(dataset), args.batch_size)):
+        for i in tqdm(range(0, len(dataset), args.batch_size), desc='│ Evaluation progress'):
             # 按照batch大小，分批向模型输入数据
             cur_dataset = dataset[i: i + args.batch_size]
             current_batch = from_example_list(args, cur_dataset, device, train=True)
@@ -82,6 +81,8 @@ def decode(choice):
 
 
 def output():
+    model_ckpt = torch.load('model.bin', map_location=device)
+    model.load_state_dict(model_ckpt['model'])
     model.eval()
     dataset = test_dataset
     predictions = []
@@ -123,7 +124,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
         np.random.shuffle(train_index)  # 随机打乱训练集
         model.train()   # 设置为训练模式，进行梯度下降
         count = 0
-        for j in tqdm(range(0, nsamples, step_size)):
+        for j in tqdm(range(0, nsamples, step_size), desc='┌ Training progress'):
             # 从数据集中获取batch_size个Example的列表
             cur_dataset = [train_dataset[k] for k in train_index[j: j + step_size]]
             # 并从这个列表创建batch
@@ -138,7 +139,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
             optimizer.step()
             optimizer.zero_grad()
             count += 1
-        print('Training: \tEpoch: %d\tTime: %.4f\tTraining jointLoss: %.4f (slotLoss: %.4f, intentLoss: %.4f)' % (i, time.time() - start_time, epoch_joint_loss / count, epoch_slot_loss / count, epoch_intent_loss / count))
+        print('│ Training: \tEpoch: %d\tTime: %.4f\tTraining jointLoss: %.4f (slotLoss: %.4f, intentLoss: %.4f)' % (i, time.time() - start_time, epoch_joint_loss / count, epoch_slot_loss / count, epoch_intent_loss / count))
         torch.cuda.empty_cache()
         gc.collect()
         
@@ -146,14 +147,14 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
         start_time = time.time()
         metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('dev')
         dev_acc, dev_fscore = metrics['acc'], metrics['fscore']
-        print('Evaluation: \tEpoch: %d\tTime: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, time.time() - start_time, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
+        print('└ Evaluation: \tEpoch: %d\tTime: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, time.time() - start_time, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
         if dev_acc > best_result['dev_acc']:
             best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1'], best_result['iter'] = dev_joint_loss, dev_acc, dev_fscore, i
             torch.save({
                 'epoch': i, 'model': model.state_dict(),
                 'optim': optimizer.state_dict(),
             }, open('model.bin', 'wb'))
-            print('NEW BEST MODEL: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
+            print('└ NEW BEST MODEL: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
 
     print('FINAL BEST RESULT: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.4f\tDev fscore(p/r/f): (%.4f/%.4f/%.4f)' % (best_result['iter'], best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1']['precision'], best_result['dev_f1']['recall'], best_result['dev_f1']['fscore']))
 if args.testing:    # 开发集状态，只进行结果评价

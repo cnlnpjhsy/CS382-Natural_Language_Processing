@@ -18,8 +18,8 @@ class SLUTagging(nn.Module):
         self.output_layer = TaggingFNNDecoder(config.hidden_size, config.num_tags, config.tag_pad_idx)
         self.CRF_output = TaggingCRF(config.num_tags)
         self.intent_output = IntentFNNDecoder(config.hidden_size, 2)
-        self.slot_loss_weight = config.slot_loss_weight
-        self.intent_loss_weight = config.intent_loss_weight
+        self.slot_loss_weight = config.slot_loss
+        self.intent_loss_weight = config.intent_loss
 
     def forward(self, batch):
         # 输入句子中词标注的嵌入表示，相当于输出y
@@ -34,7 +34,7 @@ class SLUTagging(nn.Module):
         # 将词的bert编码送入预训练模型，得到隐藏层张量
         hiddens = self.bert(input_idx, input_type_idx, input_attn_mask).last_hidden_state
         # bert的隐藏层张量送入decoder中，返回各个标注概率
-        tag_logits = self.output_layer(hiddens, tag_mask)
+        tag_logits = self.output_layer(hiddens)
         # 标注概率再送入条件随机场，训练转移概率矩阵得到最佳标注
         CRF_tag_output = self.CRF_output(tag_logits, tag_ids, tag_mask)
         if not self.output:
@@ -99,13 +99,13 @@ class TaggingFNNDecoder(nn.Module):
         super(TaggingFNNDecoder, self).__init__()
         self.num_tags = num_tags
         self.output_layer = nn.Linear(input_size, num_tags)
-        self.loss_fct = nn.CrossEntropyLoss(ignore_index=pad_id)
+        # self.loss_fct = nn.CrossEntropyLoss(ignore_index=pad_id)
 
-    def forward(self, hiddens, mask):
+    def forward(self, hiddens):
         logits = self.output_layer(hiddens)     # 接全连接层，得到预测输出logits
-        if mask is not None:
-            # 被mask时，对应logits为负无穷
-            logits += (1 - mask).unsqueeze(-1).repeat(1, 1, self.num_tags) * -1e32
+        # if mask is not None:
+        #     # 被mask时，对应logits为负无穷
+        #     logits += (1 - mask).unsqueeze(-1).repeat(1, 1, self.num_tags) * -1e32
         return logits
 
 
