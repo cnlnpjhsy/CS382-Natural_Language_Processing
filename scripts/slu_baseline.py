@@ -157,6 +157,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
             print('└ NEW BEST MODEL: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
 
     print('FINAL BEST RESULT: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.4f\tDev fscore(p/r/f): (%.4f/%.4f/%.4f)' % (best_result['iter'], best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1']['precision'], best_result['dev_f1']['recall'], best_result['dev_f1']['fscore']))
+    torch.save({'model': model.state_dict()}, open('model_final.bin', 'wb'))
 if args.testing:    # 开发集状态，只进行结果评价
     start_time = time.time()
     metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('dev')

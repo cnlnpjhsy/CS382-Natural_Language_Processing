@@ -11,7 +11,8 @@ class VocabTokenizer():
     '用于将输入句子转换为bert token形式。'
     def __init__(self, padding=False, unk=False, min_freq=1, filepath=None):
         super(VocabTokenizer, self).__init__()
-        self.tokenizer = AutoTokenizer.from_pretrained('hfl/chinese-roberta-wwm-ext')
+        # self.tokenizer = AutoTokenizer.from_pretrained('hfl/chinese-roberta-wwm-ext')
+        self.tokenizer = AutoTokenizer.from_pretrained('D:/NLPmodel')
 
     def __call__(self, utt):
         token = self.tokenizer(utt, padding='longest', return_tensors='pt')
@@ -34,7 +35,7 @@ class LabelVocab():
         self.tag2idx[CLS] = 2
         self.idx2tag[2] = CLS
         self.tag2idx[SEP] = 3
-        self.tag2idx[3] = SEP
+        self.idx2tag[3] = SEP
         self.from_filepath(root)
 
     def from_filepath(self, root):

@@ -11,8 +11,11 @@ class SLUTagging(nn.Module):
     def __init__(self, config):
         super(SLUTagging, self).__init__()
         self.config = config
-        self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
         self.output = config.output
+        self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
+        # 微调的效果不理想。直接冻结bert参数进行训练
+        # for p in self.bert.parameters():
+        #     p.requires_grad = False
         # 编码层的输出对每个字都是一层隐藏层（默认维度为768维），用于接下来的解码
         # 例如：[CLS]我要去北京[SEP]，最终输出得到(1, 7, 768)维度的张量
         self.output_layer = TaggingFNNDecoder(config.hidden_size, config.num_tags, config.tag_pad_idx)
