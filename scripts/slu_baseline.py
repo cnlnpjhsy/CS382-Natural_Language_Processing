@@ -12,6 +12,7 @@ from utils.initialization import *
 from utils.example import Example
 from utils.batch import from_example_list
 from utils.vocab import CLS, PAD, SEP, LabelVocab
+from utils.correction import Correction
 from model.slu_bert_tagging import SLUTagging
 
 # initialization params, output path, logger, random seed and torch.device
@@ -46,6 +47,7 @@ args.num_intents = 2
 
 
 model = SLUTagging(args).to(device)
+corrector = Correction(args.dataroot)
 
 def set_optimizer(model, args):
     params = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
@@ -56,8 +58,10 @@ def set_optimizer(model, args):
 
 def decode(choice):
     assert choice in ['train', 'dev']
+    if choice == 'dev':
+        model.load_state_dict(torch.load('model_joint.bin', map_location=device)['model'])
     model.eval()    # 设置为eval模式，固定dropout的值
-    dataset = train_dataset if choice == 'train' else dev_dataset
+    dataset = dev_dataset
     predictions, labels = [], []    # 整个数据集的预测结果、实际标注列表。都是'动作-语义槽-槽值'的可读形式
     total_slot_loss, total_intent_loss, total_joint_loss, count = 0, 0, 0, 0
     with torch.no_grad():   # decode阶段不需要计算梯度
@@ -66,7 +70,7 @@ def decode(choice):
             cur_dataset = dataset[i: i + args.batch_size]
             current_batch = from_example_list(args, cur_dataset, device, train=True)
             # 获取当前batch的预测结果、实际标注和loss
-            pred, label, slot_loss, intent_loss, joint_loss = model.decode(Example.label_vocab, current_batch)
+            pred, label, slot_loss, intent_loss, joint_loss = model.decode(Example.label_vocab, current_batch, corrector)
             predictions.extend(pred)    # 将这个batch的预测结果添加到整个数据集的列表
             labels.extend(label)    # 将这个batch的实际标注添加到数据集的列表
             total_slot_loss += slot_loss
@@ -81,23 +85,17 @@ def decode(choice):
 
 
 def output():
-    model_ckpt = torch.load('model.bin', map_location=device)
+    model_ckpt = torch.load('model_joint.bin', map_location=device)
     model.load_state_dict(model_ckpt['model'])
     model.eval()
     dataset = test_dataset
     predictions = []
-    # original_pred = dict()
     with torch.no_grad():
-        for i in range(0, len(dataset), args.batch_size):
+        for i in tqdm(range(0, len(dataset), args.batch_size), desc='> Testing progress'):
             cur_dataset = dataset[i: i + args.batch_size]
             current_batch = from_example_list(args, cur_dataset, device, train=False) 
-            pred = model.decode(Example.label_vocab, current_batch)
+            pred = model.decode(Example.label_vocab, current_batch, corrector)
             predictions.extend(pred)
-    #         original_idx.extend(current_batch.original_idx)
-    # count = 0
-    # for idx in original_idx:
-    #     original_pred[idx] = [pred_tuple.split('-') for pred_tuple in predictions[count]]
-    #     count += 1
     
     datas = json.load(open(test_path, 'r', encoding='utf-8'))
     count = 0
@@ -147,7 +145,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
         
         # 经过一个epoch的训练后，在开发集上进行测试
         start_time = time.time()
-        metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('dev')
+        metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('train')
         dev_acc, dev_fscore = metrics['acc'], metrics['fscore']
         print('└ Evaluation: \tEpoch: %d\tTime: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, time.time() - start_time, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
         if dev_acc > best_result['dev_acc']:
@@ -167,8 +165,9 @@ if args.testing:    # 开发集状态，只进行结果评价
     metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('dev')
     dev_acc, dev_fscore = metrics['acc'], metrics['fscore']
     print("Evaluation costs %.2fs ; Dev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)" % (time.time() - start_time, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
+    corrector.save_correction_history(os.path.join(args.dataroot, 'correction_history.json'))
 if args.output:     # 测试集状态，只进行结果输出
     start_time = time.time()
     predictions = output()
     print("Successfully write predictions as outputs, costs %.2fs." % (time.time() - start_time))
-
+    corrector.save_correction_history(os.path.join(args.dataroot, 'correction_history.json'))

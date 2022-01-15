@@ -49,3 +49,13 @@ FINAL BEST RESULT:      Epoch: 3        Dev loss: 0.4687        Dev acc: 73.0727
 ```
 FINAL BEST RESULT:      Epoch: 98       Dev joint loss: 4.2948  Dev acc: 78.0673        Dev fscore(p/r/f): (86.1239/80.3209/83.1212)
 ```
+
+`model_joint.bin`
+```
+FINAL BEST RESULT:      Epoch: 48       Dev joint loss: 3.2239  Dev acc: 78.9359        Dev fscore(p/r/f): (83.9520/82.2460/83.0902)
+```
+
+`model_joint.bin`带纠错
+```
+Evaluation costs 53.88s ; Dev joint loss: 1.9398        Dev acc: 81.43  Dev fscore(p/r/f): (86.68/84.92/85.79)
+```

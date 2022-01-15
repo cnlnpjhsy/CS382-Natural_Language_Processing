@@ -11,12 +11,13 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "--max_epoch", "100", 
+                // "--max_epoch", "100", 
                 "--device", "0", 
                 "--batch_size", "32",
-                "--lr", "1e-5",
-                "--slot_loss", "0.01"
+                // "--lr", "1e-5",
+                "--slot_loss", "0.01",
                 // "--output"
+                "--testing"
             ]
         }
     ]

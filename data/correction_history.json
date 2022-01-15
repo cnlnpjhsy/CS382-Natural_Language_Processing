@@ -1,0 +1,392 @@
+[
+    {
+        "asr_text": "导航到微山县",
+        "original value": "微山县",
+        "correction value": "文山",
+        "distance": 2.9631371634125854
+    },
+    {
+        "asr_text": "导航去苏宁关站",
+        "original value": "苏宁关站",
+        "correction value": "苏宁电器",
+        "distance": 4.329047619047619
+    },
+    {
+        "asr_text": "导航西宁市城南总站",
+        "original value": "西宁市城南总站",
+        "correction value": "西宁市城南",
+        "distance": 2.0
+    },
+    {
+        "asr_text": "导航玲超市",
+        "original value": "玲超市",
+        "correction value": "林沙市",
+        "distance": 5.48972720226009
+    },
+    {
+        "asr_text": "导航到也民村",
+        "original value": "也民村",
+        "correction value": "未名园",
+        "distance": 4.005
+    },
+    {
+        "asr_text": "嗯灞桥世博大道誓言大公馆",
+        "original value": "灞桥世博大道",
+        "correction value": "灞桥世博大道誓言大公馆",
+        "distance": 14.5
+    },
+    {
+        "asr_text": "嗯灞桥世博大道誓言大公馆",
+        "original value": "公馆",
+        "correction value": "潼关县",
+        "distance": 4.311190453301105
+    },
+    {
+        "asr_text": "导航到黄泥榜",
+        "original value": "黄泥榜",
+        "correction value": "黄泥磅",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "去沭阳县中华小区",
+        "original value": "沭阳县中华小区",
+        "correction value": "沭阳县中华小",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "沈阳沈河去渭南市东宝路",
+        "original value": "渭南市东宝路",
+        "correction value": "渭南市白杨镇",
+        "distance": 9.107099077944103
+    },
+    {
+        "asr_text": "深州导航",
+        "original value": "深州",
+        "correction value": "郴州",
+        "distance": 1.6734350297014737
+    },
+    {
+        "asr_text": "导航去北京市",
+        "original value": "北京市",
+        "correction value": "北京路",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "我要去章丘区到涨镇十八盘村",
+        "original value": "章丘区",
+        "correction value": "商丘",
+        "distance": 2.858464589396188
+    },
+    {
+        "asr_text": "小安请导航到高源龙",
+        "original value": "高源龙",
+        "correction value": "高院",
+        "distance": 2.0004761904761903
+    },
+    {
+        "asr_text": "到附近武警店",
+        "original value": "武警店",
+        "correction value": "五金店",
+        "distance": 2.112222222222222
+    },
+    {
+        "asr_text": "马中路",
+        "original value": "马中路",
+        "correction value": "马庄商商",
+        "distance": 7.556585525953485
+    },
+    {
+        "asr_text": "取消导航滚蛋",
+        "original value": "滚蛋",
+        "correction value": "恒大",
+        "distance": 5.381257691937424
+    },
+    {
+        "asr_text": "和塘盛店",
+        "original value": "和塘盛店",
+        "correction value": "荷塘盛宴",
+        "distance": 2.0
+    },
+    {
+        "asr_text": "到九江乡过场",
+        "original value": "九江乡",
+        "correction value": "九江",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "近郊有什么好玩的地方",
+        "original value": "近郊",
+        "correction value": "九江",
+        "distance": 3.0
+    },
+    {
+        "asr_text": "近郊有什么好玩的地方",
+        "original value": "好玩",
+        "correction value": "好玩的地方",
+        "distance": 3.0
+    },
+    {
+        "asr_text": "导航到五堡四区",
+        "original value": "五堡四区",
+        "correction value": "五堡社区",
+        "distance": 5.57768990248582
+    },
+    {
+        "asr_text": "导航到大饭店",
+        "original value": "大饭店",
+        "correction value": "大观区",
+        "distance": 4.297142857142857
+    },
+    {
+        "asr_text": "我要去舜奥华",
+        "original value": "舜奥华",
+        "correction value": "舜奥华府",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "导航到了下午场到了洲心中心小学",
+        "original value": "洲心中心小学",
+        "correction value": "中心中心小学",
+        "distance": 1.2976190476190477
+    },
+    {
+        "asr_text": "我要去惠山区两城市",
+        "original value": "惠山区两城市",
+        "correction value": "惠山区理想城市",
+        "distance": 9.143105154424475
+    },
+    {
+        "asr_text": "任丘",
+        "original value": "任丘",
+        "correction value": "内丘县",
+        "distance": 4.982040246914295
+    },
+    {
+        "asr_text": "湖南",
+        "original value": "湖南",
+        "correction value": "湖南桑",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "找到东山一中",
+        "original value": "东山一中",
+        "correction value": "中山益隆",
+        "distance": 5.940215112791741
+    },
+    {
+        "asr_text": "导航兰线",
+        "original value": "兰线",
+        "correction value": "兰县",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "拨通福海县到乌龙贾湖",
+        "original value": "海县",
+        "correction value": "开县",
+        "distance": 1.4088095238095237
+    },
+    {
+        "asr_text": "河南岸",
+        "original value": "河南岸",
+        "correction value": "河南新乡市",
+        "distance": 3.0
+    },
+    {
+        "asr_text": "我要去善婷",
+        "original value": "善婷",
+        "correction value": "山亭",
+        "distance": 2.000714285714286
+    },
+    {
+        "asr_text": "华一酒店",
+        "original value": "华一酒店",
+        "correction value": "华邑酒店",
+        "distance": 1.000357142857143
+    },
+    {
+        "asr_text": "到南江尾村",
+        "original value": "南江尾村",
+        "correction value": "南江燕",
+        "distance": 8.43674102807803
+    },
+    {
+        "asr_text": "鲁山事件行",
+        "original value": "鲁山事件行",
+        "correction value": "鲁山市建行",
+        "distance": 2.0
+    },
+    {
+        "asr_text": "我饿了国际花园",
+        "original value": "国际花园",
+        "correction value": "国际大酒店",
+        "distance": 5.198292315386737
+    },
+    {
+        "asr_text": "去永昌县骊千盛",
+        "original value": "永昌县骊千盛",
+        "correction value": "永昌县骊千城",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "导航到保铺村收费站",
+        "original value": "保铺村收费站",
+        "correction value": "包埠村收费站",
+        "distance": 2.144285714285714
+    },
+    {
+        "asr_text": "我要去大馅临汾岗",
+        "original value": "大馅临汾岗",
+        "correction value": "霸县临汾岗",
+        "distance": 3.3095238095238093
+    },
+    {
+        "asr_text": "去福建师范大学协和季协和学院计算机楼d",
+        "original value": "福建师范大学协和季协和学院计算机楼d",
+        "correction value": "福建师范大学协和季协和学院计算机楼d五",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "去往献县",
+        "original value": "往献县",
+        "correction value": "安县",
+        "distance": 2.316955792532713
+    },
+    {
+        "asr_text": "导航到四区自贡市区",
+        "original value": "四区自贡市区",
+        "correction value": "市区自贡市区",
+        "distance": 1.0238095238095237
+    },
+    {
+        "asr_text": "恩贾",
+        "original value": "恩贾",
+        "correction value": "恩江中学",
+        "distance": 3.408809523809524
+    },
+    {
+        "asr_text": "去尚胜竹",
+        "original value": "尚胜竹",
+        "correction value": "山水库",
+        "distance": 4.793195902854119
+    },
+    {
+        "asr_text": "开佛路",
+        "original value": "开佛路",
+        "correction value": "白佛",
+        "distance": 3.486807179905048
+    },
+    {
+        "asr_text": "杨铭科汽车用品",
+        "original value": "汽车用品",
+        "correction value": "汽车园",
+        "distance": 5.2233475444076705
+    },
+    {
+        "asr_text": "我要到上山下村",
+        "original value": "上山下村",
+        "correction value": "山岔桥",
+        "distance": 13.520690118231222
+    },
+    {
+        "asr_text": "我要去蓝田县",
+        "original value": "蓝田县",
+        "correction value": "蓝天家园",
+        "distance": 3.000238095238095
+    },
+    {
+        "asr_text": "到晋江证办理处",
+        "original value": "晋江证办理处",
+        "correction value": "进京证办理处",
+        "distance": 9.145088937050913
+    },
+    {
+        "asr_text": "导航甘旭省信访办",
+        "original value": "甘旭省信访办",
+        "correction value": "甘肃省信访办",
+        "distance": 5.76816609296201
+    },
+    {
+        "asr_text": "我要去嵩明县戚薇",
+        "original value": "明县",
+        "correction value": "民权",
+        "distance": 5.962039439401435
+    },
+    {
+        "asr_text": "泸州市政府",
+        "original value": "泸州市政府",
+        "correction value": "泸州市区",
+        "distance": 11.541567042962173
+    },
+    {
+        "asr_text": "我要去那个开发区广州路上坡右手第一个大院",
+        "original value": "开发区广州路",
+        "correction value": "开发区管委会",
+        "distance": 3.0595238095238093
+    },
+    {
+        "asr_text": "现在到阿勒斯坦工厂有多远",
+        "original value": "阿勒斯坦工厂",
+        "correction value": "阿勒斯坦",
+        "distance": 2.0
+    },
+    {
+        "asr_text": "我要去西南广村",
+        "original value": "西南广村",
+        "correction value": "西南光村",
+        "distance": 1.0002380952380951
+    },
+    {
+        "asr_text": "那叫什么导航到喜盈门",
+        "original value": "喜盈门",
+        "correction value": "西一中",
+        "distance": 3.5585714285714287
+    },
+    {
+        "asr_text": "到灵寿县胜三g乡河曲村",
+        "original value": "寿县",
+        "correction value": "旧县",
+        "distance": 3.8030202094725056
+    },
+    {
+        "asr_text": "到我那里根我以后你要到那个厦门世界",
+        "original value": "厦门世界",
+        "correction value": "厦门鼓浪屿",
+        "distance": 11.708782172283481
+    },
+    {
+        "asr_text": "去柘林镇海丰家园",
+        "original value": "柘林镇海丰家园",
+        "correction value": "柘林镇海上家园",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "我要去会场",
+        "original value": "会场",
+        "correction value": "会昌县",
+        "distance": 2.0004761904761903
+    },
+    {
+        "asr_text": "人行天桥不",
+        "original value": "人行天桥",
+        "correction value": "耿庄桥",
+        "distance": 13.301494533685638
+    },
+    {
+        "asr_text": "连丽",
+        "original value": "连丽",
+        "correction value": "兰澧县",
+        "distance": 3.2645238095238094
+    },
+    {
+        "asr_text": "导航去五路居红木家具行",
+        "original value": "五路居红木家具行",
+        "correction value": "五路居红木家具城",
+        "distance": 1.0
+    },
+    {
+        "asr_text": "疾控",
+        "original value": "疾控",
+        "correction value": "疾控中心",
+        "distance": 2.0
+    }
+]

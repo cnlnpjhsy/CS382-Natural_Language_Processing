@@ -1,10 +1,14 @@
 import json
 import os
-from pypinyin import pinyin, lazy_pinyin, Style
+import re
+from pypinyin import lazy_pinyin, Style
 
 DATAROOT = './data'
 input = os.path.join(DATAROOT, 'lexicon/poi_name.txt')
 output = os.path.join(DATAROOT, 'poi_name_ngram.json')
+
+def rm_symbols(s):
+    return re.sub(r'[^(\u4e00-\u9fa5a-zA-Z)]', '', s)
 
 with open(input, 'r', encoding='utf-8') as f:
     poi_list = f.readlines()
@@ -12,20 +16,21 @@ with open(input, 'r', encoding='utf-8') as f:
 poi_2gram, poi_3gram, poi_4gram = {}, {}, {}
 for poi in poi_list:
     poi = poi.strip()
-    if len(poi) >= 2:
-        poi_2 = poi[:2]
+    poi_re = rm_symbols(poi)
+    if len(poi_re) >= 2:
+        poi_2 = poi_re[:2]
         index = ' '.join(lazy_pinyin(poi_2, style=Style.TONE3))
         if index not in poi_2gram:
             poi_2gram[index] = []
         poi_2gram[index].append(poi)
-    if len(poi) >= 3:
-        poi_3 = poi[:3]
+    if len(poi_re) >= 3:
+        poi_3 = poi_re[:3]
         index = ' '.join(lazy_pinyin(poi_3, style=Style.TONE3))
         if index not in poi_3gram:
             poi_3gram[index] = []
         poi_3gram[index].append(poi)
-    if len(poi) >= 4:
-        poi_4 = poi[:4]
+    if len(poi_re) >= 4:
+        poi_4 = poi_re[:4]
         index = ' '.join(lazy_pinyin(poi_4, style=Style.TONE3))
         if index not in poi_4gram:
             poi_4gram[index] = []

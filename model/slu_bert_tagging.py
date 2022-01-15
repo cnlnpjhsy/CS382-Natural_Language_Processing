@@ -61,7 +61,7 @@ class SLUTagging(nn.Module):
         # 训练时，返回预测标注与loss；测试时，只返回预测标注
         return CRF_tag_output
 
-    def decode(self, label_vocab, batch):   # 在开发集上使用decode函数
+    def decode(self, label_vocab, batch, corrector):   # 在开发集上使用decode函数
         batch_size = len(batch)
         labels = batch.labels   # 整个batch的实际标注，'动作-语义槽-槽值'的可读形式
         if not self.output:
@@ -96,6 +96,8 @@ class SLUTagging(nn.Module):
                 slot = '-'.join(tag_buff[0].split('-')[1:])
                 value = ''.join([batch.utt[i][j] for j in idx_buff])
                 pred_tuple.append(f'{slot}-{value}')    # 添加预测结果'动作-语义槽-槽值'
+            # 进行poi修正
+            pred_tuple = corrector(batch.utt[i], pred_tuple)
             predictions.append(pred_tuple)  # 将这个Example的预测结果添加到batch的预测结果中
             # 到此为止完成了batch里其中一个Example的解码过程。继续循环batch内所有的Example
         if not self.output:
