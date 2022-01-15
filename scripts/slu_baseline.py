@@ -81,7 +81,7 @@ def decode(choice):
 
 
 def output():
-    model_ckpt = torch.load('model_bert.bin', map_location=device)
+    model_ckpt = torch.load('model.bin', map_location=device)
     model.load_state_dict(model_ckpt['model'])
     model.eval()
     dataset = test_dataset
@@ -121,6 +121,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
         start_time = time.time()
         epoch_joint_loss = 0
         epoch_slot_loss, epoch_intent_loss = 0, 0
+        epoch_manual_slot_loss = 0
         np.random.shuffle(train_index)  # 随机打乱训练集
         model.train()   # 设置为训练模式，进行梯度下降
         count = 0
@@ -130,16 +131,17 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
             # 并从这个列表创建batch
             current_batch = from_example_list(args, cur_dataset, device, train=True)
             # 前向传递，获得输出的预测标注与loss
-            output, slot_loss, intent_loss, joint_loss = model(current_batch)
+            output, slot_loss, manual_slot_loss, intent_loss, joint_loss = model(current_batch)
             epoch_joint_loss += joint_loss.item()
             epoch_slot_loss += slot_loss.item()
+            epoch_manual_slot_loss += manual_slot_loss.item()
             epoch_intent_loss += intent_loss.item()
             # 反向传递，更新模型参数
             joint_loss.backward()
             optimizer.step()
             optimizer.zero_grad()
             count += 1
-        print('│ Training: \tEpoch: %d\tTime: %.4f\tTraining jointLoss: %.4f (slotLoss: %.4f, intentLoss: %.4f)' % (i, time.time() - start_time, epoch_joint_loss / count, epoch_slot_loss / count, epoch_intent_loss / count))
+        print('│ Training: \tEpoch: %d\tTime: %.4f\tTraining jointLoss: %.4f (slotLoss: (%.4f + %.4f)/2, intentLoss: %.4f)' % (i, time.time() - start_time, epoch_joint_loss / count, epoch_slot_loss / count, epoch_manual_slot_loss / count, epoch_intent_loss / count))
         torch.cuda.empty_cache()
         gc.collect()
         

@@ -18,6 +18,18 @@ def from_example_list(args, ex_list, device='cpu', train=True):
     batch.input_type_idx = input_type_idx.to(device)
     batch.input_attn_mask = input_attn_mask.to(device)
 
+    if train:
+        batch.manual_utt = [ex.manual_utt for ex in ex_list]
+        batch.manual_utt_split = [ex.manual_utt_split for ex in ex_list]
+        manual_input_idx, manual_input_type_idx, manual_input_attn_mask = batch.tokenizer(batch.manual_utt_split)
+        batch.manual_input_idx = manual_input_idx.to(device)
+        batch.manual_input_type_idx = manual_input_type_idx.to(device)
+        batch.manual_input_attn_mask = manual_input_attn_mask.to(device)
+    else:
+        batch.manual_input_idx = None
+        batch.manual_input_type_idx = None
+        batch.manual_input_attn_mask = None
+
     if train:   # 训练时，为batch添加正确的标签
         # 获取batch里Example的'动作-语义槽-槽值'标注
         batch.labels = [ex.slotvalue for ex in ex_list]
@@ -25,19 +37,27 @@ def from_example_list(args, ex_list, device='cpu', train=True):
         intents = [ex.intent for ex in ex_list]
         # 获取batch里各个标注的'B/I-动作-语义槽'嵌入表示列表。以最长的那个文本为最大长度，不足用PAD补齐
         tag_lens = [len(ex.tag_id) for ex in ex_list]
+        manual_tag_lens = [len(ex.manual_tag_id) for ex in ex_list]
         max_tag_lens = max(tag_lens)
+        manual_max_tag_lens = max(manual_tag_lens)
         tag_ids = [ex.tag_id + [tag_pad_idx] * (max_tag_lens - len(ex.tag_id)) for ex in ex_list]
+        manual_tag_ids = [ex.manual_tag_id + [tag_pad_idx] * (manual_max_tag_lens - len(ex.manual_tag_id)) for ex in ex_list]
         # 将PAD用掩码掩盖掉
         tag_mask = [[1] * len(ex.tag_id) + [0] * (max_tag_lens - len(ex.tag_id)) for ex in ex_list]
+        manual_tag_mask = [[1] * len(ex.manual_tag_id) + [0] * (manual_max_tag_lens - len(ex.manual_tag_id)) for ex in ex_list]
         # 把batch里统一长度的Example词标注列表转换为张量，用于训练
         batch.intents = torch.tensor(intents, dtype=torch.long, device=device)
         batch.tag_ids = torch.tensor(tag_ids, dtype=torch.long, device=device)
+        batch.manual_tag_ids = torch.tensor(manual_tag_ids, dtype=torch.long, device=device)
         batch.tag_mask = torch.tensor(tag_mask, dtype=torch.float, device=device)
+        batch.manual_tag_mask = torch.tensor(manual_tag_mask, dtype=torch.long, device=device)
     else:
         batch.labels = None
         batch.intents = None
         batch.tag_ids = None
+        batch.manual_tag_ids = None
         batch.tag_mask = None
+        batch.manual_tag_mask = None
 
     return batch
 

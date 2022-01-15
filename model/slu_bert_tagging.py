@@ -14,9 +14,6 @@ class SLUTagging(nn.Module):
         self.output = config.output
         self.bert = AutoModel.from_pretrained('D:/NLPmodel')
         # self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
-        # 微调的效果不理想。直接冻结bert参数进行训练
-        # for p in self.bert.parameters():
-        #     p.requires_grad = False
         # 编码层的输出对每个字都是一层隐藏层（默认维度为768维），用于接下来的解码
         # 例如：[CLS]我要去北京[SEP]，最终输出得到(1, 7, 768)维度的张量
         self.output_layer = TaggingFNNDecoder(config.hidden_size, config.num_tags, config.tag_pad_idx)
@@ -28,12 +25,17 @@ class SLUTagging(nn.Module):
     def forward(self, batch):
         # 输入句子中词标注的嵌入表示，相当于输出y
         tag_ids = batch.tag_ids
+        manual_tag_ids = batch.manual_tag_ids
         tag_mask = batch.tag_mask
+        manual_tag_mask = batch.manual_tag_mask
         intents = batch.intents
         # 输入句子中词的bert表示，相当于输入x
         input_idx = batch.input_idx
+        manual_input_idx = batch.manual_input_idx
         input_type_idx = batch.input_type_idx
+        manual_input_type_idx = batch.manual_input_type_idx
         input_attn_mask = batch.input_attn_mask
+        manual_input_attn_mask = batch.manual_input_attn_mask
 
         # 将词的bert编码送入预训练模型，得到隐藏层张量
         hiddens = self.bert(input_idx, input_type_idx, input_attn_mask).last_hidden_state
@@ -42,15 +44,20 @@ class SLUTagging(nn.Module):
         # 标注概率再送入条件随机场，训练转移概率矩阵得到最佳标注
         CRF_tag_output = self.CRF_output(tag_logits, tag_ids, tag_mask)
         if not self.output:
+            # 训练条件下，manual文本也一同送入模型
+            manual_hiddens = self.bert(manual_input_idx, manual_input_type_idx, manual_input_attn_mask).last_hidden_state
+            manual_tag_logits = self.output_layer(manual_hiddens)
+            manual_CRF_tag_output = self.CRF_output(manual_tag_logits, manual_tag_ids, manual_tag_mask)
             # 联合训练时，将[CLS]对应hiddens输入意图预测中
             intent_output = self.intent_output(hiddens[:, :1, :], intents)
 
         if not self.output:
             tag_seq = CRF_tag_output[0]
             slot_loss = CRF_tag_output[1]
+            manual_slot_loss = manual_CRF_tag_output[1]
             intent_loss = intent_output
-            joint_loss = self.slot_loss_weight * slot_loss + self.intent_loss_weight * intent_loss
-            return tag_seq, slot_loss, intent_loss, joint_loss
+            joint_loss = self.slot_loss_weight * (slot_loss + manual_slot_loss) / 2 + self.intent_loss_weight * intent_loss
+            return tag_seq, slot_loss, manual_slot_loss, intent_loss, joint_loss
         # 训练时，返回预测标注与loss；测试时，只返回预测标注
         return CRF_tag_output
 
@@ -58,7 +65,7 @@ class SLUTagging(nn.Module):
         batch_size = len(batch)
         labels = batch.labels   # 整个batch的实际标注，'动作-语义槽-槽值'的可读形式
         if not self.output:
-            tag_seq, slot_loss, intent_loss, joint_loss = self.forward(batch)    # 获取模型输出的标注与loss
+            tag_seq, slot_loss, manual_slot_loss, intent_loss, joint_loss = self.forward(batch)    # 获取模型输出的标注与loss
         else:
             tag_seq = self.forward(batch)
         predictions = []    # 整个batch的预测结果，'动作-语义槽-槽值'的可读形式
@@ -144,15 +151,3 @@ class IntentFNNDecoder(nn.Module):
             return intent_loss
         return
         
-
-# def argmax(vec):
-#     # return the argmax as a python int
-#     _, idx = torch.max(vec, 1)
-#     return idx.item()
-
-# def log_sum_exp(vec):
-#     # 计算softmax的概率加和，并转换为对数形式
-#     max_score = vec[0, argmax(vec)]
-#     max_score_broadcast = max_score.view(1, -1).expand(1, vec.size()[1])
-#     return max_score + \
-#         torch.log(torch.sum(torch.exp(vec - max_score_broadcast)))
