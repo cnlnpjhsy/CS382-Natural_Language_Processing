@@ -11,8 +11,9 @@ def from_example_list(args, ex_list, device='cpu', train=True):
     tag_pad_idx = args.tag_pad_idx
 
     batch.utt = [ex.utt for ex in ex_list]
+    batch.utt_split = [ex.utt_split for ex in ex_list]
     # 将utt文本成批送入Tokenizer，可以自动填充PAD。转换为张量，作为模型的输入
-    input_idx, input_type_idx, input_attn_mask = batch.tokenizer(batch.utt)
+    input_idx, input_type_idx, input_attn_mask = batch.tokenizer(batch.utt_split)
     batch.input_idx = input_idx.to(device)
     batch.input_type_idx = input_type_idx.to(device)
     batch.input_attn_mask = input_attn_mask.to(device)

@@ -25,7 +25,7 @@ print("Use GPU with index %s" % (args.device) if args.device >= 0 else "Use CPU 
 start_time = time.time()
 train_path = os.path.join(args.dataroot, 'train.json')
 dev_path = os.path.join(args.dataroot, 'development.json')
-test_path = os.path.join(args.dataroot, 'test_unlabelled.json')
+test_path = os.path.join(args.dataroot, 'development.json')
 output_path = os.path.join(args.dataroot, 'test.json')
 Example.configuration(args.dataroot)
 if not args.output:
@@ -81,7 +81,7 @@ def decode(choice):
 
 
 def output():
-    model_ckpt = torch.load('model.bin', map_location=device)
+    model_ckpt = torch.load('model_bert.bin', map_location=device)
     model.load_state_dict(model_ckpt['model'])
     model.eval()
     dataset = test_dataset
@@ -151,13 +151,15 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
         if dev_acc > best_result['dev_acc']:
             best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1'], best_result['iter'] = dev_joint_loss, dev_acc, dev_fscore, i
             torch.save({
-                'epoch': i, 'model': model.state_dict(),
-                'optim': optimizer.state_dict(),
+                'model': model.state_dict(),
             }, open('model.bin', 'wb'))
             print('└ NEW BEST MODEL: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
 
     print('FINAL BEST RESULT: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.4f\tDev fscore(p/r/f): (%.4f/%.4f/%.4f)' % (best_result['iter'], best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1']['precision'], best_result['dev_f1']['recall'], best_result['dev_f1']['fscore']))
-    torch.save({'model': model.state_dict()}, open('model_final.bin', 'wb'))
+    torch.save({'epoch': i, 
+                'model': model.state_dict(),
+                'optim': optimizer.state_dict()
+    }, open('model_final.bin', 'wb'))
 if args.testing:    # 开发集状态，只进行结果评价
     start_time = time.time()
     metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('dev')

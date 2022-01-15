@@ -12,7 +12,8 @@ class SLUTagging(nn.Module):
         super(SLUTagging, self).__init__()
         self.config = config
         self.output = config.output
-        self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
+        self.bert = AutoModel.from_pretrained('D:/NLPmodel')
+        # self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
         # 微调的效果不理想。直接冻结bert参数进行训练
         # for p in self.bert.parameters():
         #     p.requires_grad = False

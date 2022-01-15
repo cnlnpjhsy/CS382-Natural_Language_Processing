@@ -1,5 +1,4 @@
 import json
-import re
 
 from utils.vocab import CLS, SEP, VocabTokenizer, LabelVocab
 from utils.word2vec import Word2vecUtils
@@ -47,7 +46,8 @@ class Example():
         super(Example, self).__init__()
         self.ex = ex
 
-        self.utt = retain_chinese(ex['asr_1best'])  # 有噪声文本，仅保留中文
+        self.utt = ex['asr_1best'].lower().replace(' ', '')     # bert不识别空格；标签的字母为小写
+        self.utt_split = list(self.utt)
         if not nolabel:
         # 这个utt的槽字典，{'动作-语义槽': 槽值}
             self.slot = {}
@@ -78,6 +78,3 @@ class Example():
             # 将噪声文本的标注转换为标注嵌入形式的列表
             l = Example.label_vocab
             self.tag_id = [l.convert_tag_to_idx(tag) for tag in self.tags]
-
-def retain_chinese(s):
-    return re.sub(r'[^(\u4e00-\u9fa5\u2014\u2018\u2019\u201c\u201d\u2026\u3001\u3002\u300a\u300b\u300e\u300f\u3010\u3011\uff01\uff08\uff09\uff0c\uff1a\uff1b\uff1f)]', '', s)

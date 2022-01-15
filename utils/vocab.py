@@ -15,7 +15,7 @@ class VocabTokenizer():
         self.tokenizer = AutoTokenizer.from_pretrained('D:/NLPmodel')
 
     def __call__(self, utt):
-        token = self.tokenizer(utt, padding='longest', return_tensors='pt')
+        token = self.tokenizer(utt, padding='longest', return_tensors='pt', is_split_into_words=True)
         token_idx = token['input_ids']
         type_idx = token['token_type_ids']
         masks = token['attention_mask']

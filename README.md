@@ -43,3 +43,9 @@ FINAL BEST RESULT:      Epoch: 3        Dev loss: 0.4687        Dev acc: 73.0727
   ```
   python scripts/slu_baseline.py --max_epoch 10 --device 0 --batch_size 64
   ```
+
+### **2022.1.14**
+`model_bert.bin`
+```
+FINAL BEST RESULT:      Epoch: 98       Dev joint loss: 4.2948  Dev acc: 78.0673        Dev fscore(p/r/f): (86.1239/80.3209/83.1212)
+```
