@@ -139,7 +139,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
             optimizer.step()
             optimizer.zero_grad()
             count += 1
-        print('│ Training: \tEpoch: %d\tTime: %.4f\tTraining jointLoss: %.4f (slotLoss: (%.4f + %.4f)/2, intentLoss: %.4f)' % (i, time.time() - start_time, epoch_joint_loss / count, epoch_slot_loss / count, epoch_manual_slot_loss / count, epoch_intent_loss / count))
+        print('│ Training: \tEpoch: %d\tTime: %.4f\tTraining jointLoss: %.4f (slotLoss: asr %.4f | manual %.4f, intentLoss: %.4f)' % (i, time.time() - start_time, epoch_joint_loss / count, epoch_slot_loss / count, epoch_manual_slot_loss / count, epoch_intent_loss / count))
         torch.cuda.empty_cache()
         gc.collect()
         

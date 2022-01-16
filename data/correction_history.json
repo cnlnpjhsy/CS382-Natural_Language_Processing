@@ -12,6 +12,12 @@
         "distance": 4.329047619047619
     },
     {
+        "asr_text": "我要到打古镇阳朔村",
+        "original value": "打古镇阳朔村",
+        "correction value": "达埔镇延寿村",
+        "distance": 13.212413209931354
+    },
+    {
         "asr_text": "导航西宁市城南总站",
         "original value": "西宁市城南总站",
         "correction value": "西宁市城南",
@@ -33,7 +39,7 @@
         "asr_text": "嗯灞桥世博大道誓言大公馆",
         "original value": "灞桥世博大道",
         "correction value": "灞桥世博大道誓言大公馆",
-        "distance": 14.5
+        "distance": 5.0
     },
     {
         "asr_text": "嗯灞桥世博大道誓言大公馆",
@@ -90,6 +96,12 @@
         "distance": 2.112222222222222
     },
     {
+        "asr_text": "帮我导航到到广州东站重聚酒店",
+        "original value": "广州东站重聚酒店",
+        "correction value": "杭州东站",
+        "distance": 5.861428571428571
+    },
+    {
         "asr_text": "马中路",
         "original value": "马中路",
         "correction value": "马庄商商",
@@ -126,6 +138,12 @@
         "distance": 3.0
     },
     {
+        "asr_text": "导航到了鸿宝c区",
+        "original value": "鸿宝c区",
+        "correction value": "高院",
+        "distance": 7.394761904761904
+    },
+    {
         "asr_text": "导航到五堡四区",
         "original value": "五堡四区",
         "correction value": "五堡社区",
@@ -150,6 +168,12 @@
         "distance": 1.2976190476190477
     },
     {
+        "asr_text": "帮我导航石岘依铮",
+        "original value": "石岘依铮",
+        "correction value": "新川医院",
+        "distance": 8.628784922201948
+    },
+    {
         "asr_text": "我要去惠山区两城市",
         "original value": "惠山区两城市",
         "correction value": "惠山区理想城市",
@@ -170,8 +194,8 @@
     {
         "asr_text": "找到东山一中",
         "original value": "东山一中",
-        "correction value": "中山益隆",
-        "distance": 5.940215112791741
+        "correction value": "湖南桑",
+        "distance": 5.0
     },
     {
         "asr_text": "导航兰线",
@@ -186,10 +210,22 @@
         "distance": 1.4088095238095237
     },
     {
+        "asr_text": "拨通福海县到乌龙贾湖",
+        "original value": "乌龙贾湖",
+        "correction value": "开县",
+        "distance": 5.4088095238095235
+    },
+    {
         "asr_text": "河南岸",
         "original value": "河南岸",
         "correction value": "河南新乡市",
         "distance": 3.0
+    },
+    {
+        "asr_text": "帮我导航到凤姐巴蜀中学",
+        "original value": "凤姐巴蜀中学",
+        "correction value": "会展中心",
+        "distance": 14.318213195657329
     },
     {
         "asr_text": "我要去善婷",
@@ -202,6 +238,12 @@
         "original value": "华一酒店",
         "correction value": "华邑酒店",
         "distance": 1.000357142857143
+    },
+    {
+        "asr_text": "迁安门广场",
+        "original value": "迁安门广场",
+        "correction value": "华邑酒店",
+        "distance": 6.000357142857143
     },
     {
         "asr_text": "到南江尾村",
@@ -284,8 +326,8 @@
     {
         "asr_text": "我要到上山下村",
         "original value": "上山下村",
-        "correction value": "山岔桥",
-        "distance": 13.520690118231222
+        "correction value": "潜山县政府",
+        "distance": 6.910443744306878
     },
     {
         "asr_text": "我要去蓝田县",
@@ -314,8 +356,8 @@
     {
         "asr_text": "泸州市政府",
         "original value": "泸州市政府",
-        "correction value": "泸州市区",
-        "distance": 11.541567042962173
+        "correction value": "民权",
+        "distance": 10.962039439401435
     },
     {
         "asr_text": "我要去那个开发区广州路上坡右手第一个大院",
@@ -328,6 +370,12 @@
         "original value": "阿勒斯坦工厂",
         "correction value": "阿勒斯坦",
         "distance": 2.0
+    },
+    {
+        "asr_text": "去三会员商店",
+        "original value": "三会员商店",
+        "correction value": "阿勒斯坦",
+        "distance": 7.0
     },
     {
         "asr_text": "我要去西南广村",
@@ -350,8 +398,8 @@
     {
         "asr_text": "到我那里根我以后你要到那个厦门世界",
         "original value": "厦门世界",
-        "correction value": "厦门鼓浪屿",
-        "distance": 11.708782172283481
+        "correction value": "旧县",
+        "distance": 7.803020209472505
     },
     {
         "asr_text": "去柘林镇海丰家园",
@@ -368,8 +416,8 @@
     {
         "asr_text": "人行天桥不",
         "original value": "人行天桥",
-        "correction value": "耿庄桥",
-        "distance": 13.301494533685638
+        "correction value": "会昌县",
+        "distance": 6.00047619047619
     },
     {
         "asr_text": "连丽",

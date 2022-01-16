@@ -81,7 +81,7 @@ class Correction():
                 for poi in candidate:
                     dist = edit_distance(value, poi)
                     if dist > EDIT_RECALL_DISTANCE:
-                        dist = ACCEPT_DISTANCE - 0.5
+                        dist = ACCEPT_DISTANCE
                     candidate[poi] += dist
 
                 best_poi = min(candidate.keys(), key=(lambda poi: candidate[poi]))

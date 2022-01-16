@@ -11,6 +11,7 @@ class SLUTagging(nn.Module):
     def __init__(self, config):
         super(SLUTagging, self).__init__()
         self.config = config
+        self.testing = config.testing
         self.output = config.output
         self.bert = AutoModel.from_pretrained('D:/NLPmodel')
         # self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
@@ -56,7 +57,7 @@ class SLUTagging(nn.Module):
             slot_loss = CRF_tag_output[1]
             manual_slot_loss = manual_CRF_tag_output[1]
             intent_loss = intent_output
-            joint_loss = self.slot_loss_weight * (slot_loss + manual_slot_loss) / 2 + self.intent_loss_weight * intent_loss
+            joint_loss = self.slot_loss_weight * (slot_loss * 0.50 + manual_slot_loss * 0.50) + self.intent_loss_weight * intent_loss
             return tag_seq, slot_loss, manual_slot_loss, intent_loss, joint_loss
         # 训练时，返回预测标注与loss；测试时，只返回预测标注
         return CRF_tag_output
@@ -96,8 +97,9 @@ class SLUTagging(nn.Module):
                 slot = '-'.join(tag_buff[0].split('-')[1:])
                 value = ''.join([batch.utt[i][j] for j in idx_buff])
                 pred_tuple.append(f'{slot}-{value}')    # 添加预测结果'动作-语义槽-槽值'
-            # 进行poi修正
-            pred_tuple = corrector(batch.utt[i], pred_tuple)
+            # 进行poi修正。训练时不修正
+            if self.testing or self.output:
+                pred_tuple = corrector(batch.utt[i], pred_tuple)
             predictions.append(pred_tuple)  # 将这个Example的预测结果添加到batch的预测结果中
             # 到此为止完成了batch里其中一个Example的解码过程。继续循环batch内所有的Example
         if not self.output:
