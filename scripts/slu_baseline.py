@@ -26,9 +26,9 @@ print("Use GPU with index %s" % (args.device) if args.device >= 0 else "Use CPU 
 start_time = time.time()
 train_path = os.path.join(args.dataroot, 'train.json')
 dev_path = os.path.join(args.dataroot, 'development.json')
-test_path = os.path.join(args.dataroot, 'development.json')
+test_path = os.path.join(args.dataroot, 'test_unlabelled.json')
 output_path = os.path.join(args.dataroot, 'test.json')
-Example.configuration(args.dataroot)
+Example.configuration(args.dataroot, args.local, not args.output)
 if not args.output:
     train_dataset = Example.load_dataset(train_path)
     dev_dataset = Example.load_dataset(dev_path)
@@ -47,7 +47,7 @@ args.num_intents = 2
 
 
 model = SLUTagging(args).to(device)
-corrector = Correction(args.dataroot)
+corrector = Correction(args.dataroot) if args.corrector else None
 
 def set_optimizer(model, args):
     params = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
@@ -59,7 +59,7 @@ def set_optimizer(model, args):
 def decode(choice):
     assert choice in ['train', 'dev']
     if choice == 'dev':
-        model.load_state_dict(torch.load('model_joint.bin', map_location=device)['model'])
+        model.load_state_dict(torch.load('model.bin', map_location=device)['model'])
     model.eval()    # 设置为eval模式，固定dropout的值
     dataset = dev_dataset
     predictions, labels = [], []    # 整个数据集的预测结果、实际标注列表。都是'动作-语义槽-槽值'的可读形式
@@ -85,7 +85,7 @@ def decode(choice):
 
 
 def output():
-    model_ckpt = torch.load('model_joint.bin', map_location=device)
+    model_ckpt = torch.load('model.bin', map_location=device)
     model.load_state_dict(model_ckpt['model'])
     model.eval()
     dataset = test_dataset
@@ -152,7 +152,7 @@ if not args.testing and not args.output:    # 如果不是开发集/测试集状
             best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1'], best_result['iter'] = dev_joint_loss, dev_acc, dev_fscore, i
             torch.save({
                 'model': model.state_dict(),
-            }, open('model.bin', 'wb'))
+            }, open('model_best.bin', 'wb'))
             print('└ NEW BEST MODEL: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)' % (i, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
 
     print('FINAL BEST RESULT: \tEpoch: %d\tDev joint loss: %.4f\tDev acc: %.4f\tDev fscore(p/r/f): (%.4f/%.4f/%.4f)' % (best_result['iter'], best_result['dev_loss'], best_result['dev_acc'], best_result['dev_f1']['precision'], best_result['dev_f1']['recall'], best_result['dev_f1']['fscore']))
@@ -165,9 +165,11 @@ if args.testing:    # 开发集状态，只进行结果评价
     metrics, dev_slot_loss, dev_intent_loss, dev_joint_loss = decode('dev')
     dev_acc, dev_fscore = metrics['acc'], metrics['fscore']
     print("Evaluation costs %.2fs ; Dev joint loss: %.4f\tDev acc: %.2f\tDev fscore(p/r/f): (%.2f/%.2f/%.2f)" % (time.time() - start_time, dev_joint_loss, dev_acc, dev_fscore['precision'], dev_fscore['recall'], dev_fscore['fscore']))
-    corrector.save_correction_history(os.path.join(args.dataroot, 'correction_history.json'))
+    if args.corrector:
+        corrector.save_correction_history(os.path.join(args.dataroot, 'correction_history.json'))
 if args.output:     # 测试集状态，只进行结果输出
     start_time = time.time()
     predictions = output()
     print("Successfully write predictions as outputs, costs %.2fs." % (time.time() - start_time))
-    corrector.save_correction_history(os.path.join(args.dataroot, 'correction_history.json'))
+    if args.corrector:
+        corrector.save_correction_history(os.path.join(args.dataroot, 'correction_history.json'))

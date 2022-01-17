@@ -1,61 +1,118 @@
 # 大作业三：口语语义理解任务
 
-## 更新记录
 
-### **2021.12.15**
-Repo创建，上传项目原文件。修改了几处bug，现在可以正常运行`slu_baseline.py`了。训练10个epoch，测试效果：
+## 目录结构
 ```
-C:\Users\hanse\Desktop\课件\大三上\自然语言处理\大作业3>python scripts/slu_baseline.py --device 0 --max_epoch 10
-Use GPU with index 0
-Initialization finished ...
-Random seed is set to 999
-Use GPU with index 0
-Load dataset and database finished, cost 4.1936s ...
-Dataset size: train -> 5093 ; dev -> 921
-Total training steps: 1600
-Start training ......
-Training:       Epoch: 0        Time: 5.4638    Training Loss: 0.9477
-Evaluation:     Epoch: 0        Time: 0.3037    Dev acc: 71.23  Dev fscore(p/r/f): (74.09/71.55/72.80)
-NEW BEST MODEL:         Epoch: 0        Dev loss: 0.5092        Dev acc: 71.23  Dev fscore(p/r/f): (74.09/71.55/72.80)
-...
-Training:       Epoch: 9        Time: 4.9588    Training Loss: 0.0733
-Evaluation:     Epoch: 9        Time: 0.2942    Dev acc: 71.66  Dev fscore(p/r/f): (79.14/75.08/77.06)
-FINAL BEST RESULT:      Epoch: 3        Dev loss: 0.4687        Dev acc: 73.0727        Dev fscore(p/r/f): (79.3527/76.0428/77.6625)
-```
-
-### **2022.1.4**  
-  - 完成了对原有代码的详细注释，方便理解。
-  - 在`slu_baseine.py`等文件补充了输出相关代码，现在可以输出符合要求的结果了，在运行指令中加入`--output`选项即可选择输出模式。该模式下的代码将读取`data/test_unlabelled.json`中的内容作为输入，并将结果输出至`data/test.json`。  
-  可以在输入的文件中自定义一些内容，方便之后的调试与效果检验。
-  ```
-  python scripts/slu_baseline.py --output
-  ```  
-  - 从输出文件中就可以看出baseline的效果很不好。快来改进吧！
-  
-### **2022.1.6**
-  - 将模型更换为BERT-CRF，并进行槽位填充与多意图分析的联合训练。  
-    CRF层使用python库：`pytorch-crf`，使用前先pip install。  
-    相关文献：
-    - [BERT for Joint Intent Classification and Slot Filling](https://arxiv.org/pdf/1902.10909.pdf)
-    - [Joint Multiple Intent Detection and Slot Labeling for Goal-Oriented Dialog](https://aclanthology.org/N19-1055.pdf)
-  - 运行该指令进行训练。需要进行充分的训练，请调整max_epoch，并根据自身显卡状况调整batch大小。似乎每1GB显存可以支持12组数据在batch里。  
-    **bert的训练很慢，请尽快进行工作，为调试与最后的fine-tuning争取时间！**
-  ```
-  python scripts/slu_baseline.py --max_epoch 10 --device 0 --batch_size 64
-  ```
-
-### **2022.1.14**
-`model_bert.bin`
-```
-FINAL BEST RESULT:      Epoch: 98       Dev joint loss: 4.2948  Dev acc: 78.0673        Dev fscore(p/r/f): (86.1239/80.3209/83.1212)
+root
+│  model.bin
+│  README.md (This file)
+│
+├─data
+│  │  correction_history.json
+│  │  development.json
+│  │  ontology.json
+│  │  poi_name_ngram.json
+│  │  test.json
+│  │  test_statistic.json
+│  │  test_unlabelled.json
+│  │  train.json
+│  │
+│  └─lexicon
+│          operation_verb.txt
+│          ordinal_number.txt
+│          poi_name.txt
+│
+├─model
+│      slu_bert_tagging.py
+│
+├─scripts
+│      slu_baseline.py
+│
+└─utils
+       args.py
+       batch.py
+       correction.py
+       evaluator.py
+       example.py
+       initialization.py
+       pinyin_ngram.py
+       statistic.py
+       vocab.py
 ```
 
-`model_joint.bin`
+## 安装依赖
 ```
-FINAL BEST RESULT:      Epoch: 48       Dev joint loss: 3.2239  Dev acc: 78.9359        Dev fscore(p/r/f): (83.9520/82.2460/83.0902)
+pip install transformers pytorch-crf Levenshtein pypinyin dimsim
 ```
 
-`model_joint.bin`带纠错
+## 运行
+
+模型共有训练、评估、输出3种模式。
+
+- **训练** 在`data/train.json`上进行模型训练，生成新模型。生成的最佳模型为`model_best.bin`，训练结束时的完整中间模型为`model_final.bin`。  
+  在根目录下运行：`python scripts/slu_baseline.py`  
+  可选参数：
+  - `--max_epoch <value>`  
+    模型训练的最大epoch数。默认为100。
+  - `--lr <value>`  
+    模型的学习率。默认为1e-5。
+  - `--hidden_size <value>`  
+    解码层解码时输入的隐状态层维度。默认为768（roberta的隐状态层维度）。**除非更换模型，否则不建议更改！**
+  - `slot_loss <value>`  
+    联合训练中，槽位填充的loss的权重。默认为0.01。
+  - `intent_loss <value>`  
+    联合训练中，意图识别的loss的权重。默认为1。
+
+- **评估** 用已经训练好的模型`model.bin`在开发集`data/development.json`上进行评估。  
+  在根目录下运行：`python scripts/slu_baseline.py --testing`  
+  可选参数：
+  - `--corrector`  
+    启用地名纠错。
+
+- **输出** 用已经训练好的模型`model.bin`读取无标注的测试文件`data/test_unlabelled.json`，并输出预测标注文件`data/test.json`。  
+  在根目录下运行：`python scripts/slu_baseline.py --output`  
+  可选参数：
+  - `--corrector`  
+    启用地名纠错。
+
+- **其他通用参数**  
+  - `--local <path>`  
+    选择使用本地的roberta模型。参数值为本地模型的路径。
+  - `--batch_size <value>`  
+    输入到模型的batch的大小。默认为32。
+  - `--dataroot <path>`  
+    数据集的目录。默认为`/data`。
+  - `--seed <value>`  
+    随机种子值。默认为999。
+  - `--device <device>`  
+    使用的设备。默认为-1（CPU）。
+
+## 结果与复现
+
+我们的模型最终在开发集上取得的成绩如下：
+
+| Accuracy | Precision | Recall | F1 |
+| -------- | --------- | ------ | -- |
+| **81.43** | **86.68** | **84.92** | **85.79** |
+
 ```
-Evaluation costs 53.88s ; Dev joint loss: 1.9398        Dev acc: 81.43  Dev fscore(p/r/f): (86.68/84.92/85.79)
+Evaluation costs 414.63s ; Dev joint loss: 1.9398       Dev acc: 81.43  Dev fscore(p/r/f): (86.68/84.92/85.79)
 ```
+要复现结果，你可以在根目录下执行下述指令：
+```
+python scripts/slu_baseline.py --testing --corrector
+```
+
+## 其他实用工具
+
+- `utils/correction.py`  
+  我们的纠错程序，能够依据已有的地名数据库，对可能错误的地名槽值进行修正。该文件中的`Correction`类在程序中被调用，无需另外运行。  
+  纠错程序的运行需要n-grams拼音数据`data/poi_name_ngram.json`，这是由`utils/pinyin_ngram.py`得到的。我们已经提供了一份n-grams拼音数据。
+
+- `utils/pinyin_ngram.py`  
+  为纠错程序提供n-grams拼音数据。该程序读取`data/lexicon/poi_name.txt`，为其中的地名生成n-grams拼音，并储存成.json文件`data/poi_name_ngram.json`，供纠错程序读取。  
+  需要注意的是该程序并不能很好地处理含英文地名的情况（例如ktv三个字会被视作一整个拼音，导致n-grams长度出错）。代码文件中已经有一份基于当前的地名数据库获得的、且对英文内容修正过的`data/poi_name_ngram.json`了，因此不建议再运行该程序，否则可能会在纠错过程中出现错误。
+
+- `utils/statistic.py`  
+  统计有正确标注的预测输出文件`data/test.json`中正确预测与错误预测的语句，分类后储存在`data/test_statistic.json`中。可以用它来查看哪些对话被正确或者错误预测了。  
+  由于要求`data/test.json`是有正确标注的文件，因此正确的使用方法应当是：先在`scripts/slu_baseline.py`中更改输出模式下的输入文件路径`test_path`为`development.json`，再运行该程序。

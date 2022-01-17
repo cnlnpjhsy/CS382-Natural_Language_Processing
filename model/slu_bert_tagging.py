@@ -1,7 +1,6 @@
 #coding=utf8
 import torch
 import torch.nn as nn
-import torch.nn.utils.rnn as rnn_utils
 from transformers import AutoModel
 from torchcrf import CRF
 
@@ -13,8 +12,7 @@ class SLUTagging(nn.Module):
         self.config = config
         self.testing = config.testing
         self.output = config.output
-        self.bert = AutoModel.from_pretrained('D:/NLPmodel')
-        # self.bert = AutoModel.from_pretrained('hfl/chinese-roberta-wwm-ext')
+        self.bert = AutoModel.from_pretrained(config.local)
         # 编码层的输出对每个字都是一层隐藏层（默认维度为768维），用于接下来的解码
         # 例如：[CLS]我要去北京[SEP]，最终输出得到(1, 7, 768)维度的张量
         self.output_layer = TaggingFNNDecoder(config.hidden_size, config.num_tags, config.tag_pad_idx)
@@ -98,7 +96,7 @@ class SLUTagging(nn.Module):
                 value = ''.join([batch.utt[i][j] for j in idx_buff])
                 pred_tuple.append(f'{slot}-{value}')    # 添加预测结果'动作-语义槽-槽值'
             # 进行poi修正。训练时不修正
-            if self.testing or self.output:
+            if corrector is not None and (self.testing or self.output):
                 pred_tuple = corrector(batch.utt[i], pred_tuple)
             predictions.append(pred_tuple)  # 将这个Example的预测结果添加到batch的预测结果中
             # 到此为止完成了batch里其中一个Example的解码过程。继续循环batch内所有的Example
@@ -114,13 +112,9 @@ class TaggingFNNDecoder(nn.Module):
         super(TaggingFNNDecoder, self).__init__()
         self.num_tags = num_tags
         self.output_layer = nn.Linear(input_size, num_tags)
-        # self.loss_fct = nn.CrossEntropyLoss(ignore_index=pad_id)
 
     def forward(self, hiddens):
         logits = self.output_layer(hiddens)     # 接全连接层，得到预测输出logits
-        # if mask is not None:
-        #     # 被mask时，对应logits为负无穷
-        #     logits += (1 - mask).unsqueeze(-1).repeat(1, 1, self.num_tags) * -1e32
         return logits
 
 

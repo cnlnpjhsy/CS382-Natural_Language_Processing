@@ -9,10 +9,9 @@ SEP = '</s>'
 
 class VocabTokenizer():
     '用于将输入句子转换为bert token形式。'
-    def __init__(self, padding=False, unk=False, min_freq=1, filepath=None):
+    def __init__(self, tokenizer_path):
         super(VocabTokenizer, self).__init__()
-        # self.tokenizer = AutoTokenizer.from_pretrained('hfl/chinese-roberta-wwm-ext')
-        self.tokenizer = AutoTokenizer.from_pretrained('D:/NLPmodel')
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
 
     def __call__(self, utt):
         token = self.tokenizer(utt, padding='longest', return_tensors='pt', is_split_into_words=True)

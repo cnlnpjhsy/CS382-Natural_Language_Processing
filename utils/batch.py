@@ -7,7 +7,7 @@ from utils.vocab import VocabTokenizer
 
 def from_example_list(args, ex_list, device='cpu', train=True):
     '获取Example的列表。每一个utt（有噪声文本）都是一个Example。bert不再需要输入按文本长度降序排列。'
-    batch = Batch(ex_list, device)
+    batch = Batch(ex_list, device, args.local)
     tag_pad_idx = args.tag_pad_idx
 
     batch.utt = [ex.utt for ex in ex_list]
@@ -64,11 +64,11 @@ def from_example_list(args, ex_list, device='cpu', train=True):
 
 class Batch():
 
-    def __init__(self, examples, device):
+    def __init__(self, examples, device, tokenizer_path):
         super(Batch, self).__init__()
 
         self.examples = examples
-        self.tokenizer = VocabTokenizer()
+        self.tokenizer = VocabTokenizer(tokenizer_path)
         self.device = device
 
     def __len__(self):
